@@ -1,16 +1,35 @@
-import React, { useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { DataContext } from './context/DataContext'
+import { useContext } from 'react'
+import { format } from 'date-fns'
 
-const UpdatePost = ({ editTitle, setEditTitle, editPostBody, setEditPostBody, posts, handleUpdate }) => {
+const UpdatePost = () => {
+    const { posts,api, navigate, setPosts } = useContext(DataContext);
+    const [editTitle, setEditTitle] = useState('');
+    const [editPostBody, setEditPostBody] = useState('');
     const { id } = useParams()
     const post = posts.find(post => post.id.toString() === id);
-    // console.log(post)
     useEffect(() => {
         if (post) {
             setEditTitle(post.title)
             setEditPostBody(post.body)
         }
     }, [post, setEditTitle, setEditPostBody])
+
+    const handleUpdate = async (id) => {
+        const datetime = format(new Date(), 'MMMM dd, yyyy pp');
+        const updatedPost = { id, title: editTitle, datetime, body: editPostBody }
+        try {
+          const response = await api.put(`/posts/${id}`, updatedPost)
+          setPosts(posts.map((post) => post.id === id ? { ...response.data } : post))
+          setEditTitle('');
+          setEditPostBody('');
+          navigate('/')
+        } catch (error) {
+          console.log(error)
+        }
+      }
     return (
         <main className='Flex-1'>
             <h2>Update Post</h2>

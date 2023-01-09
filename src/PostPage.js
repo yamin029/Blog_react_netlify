@@ -1,11 +1,25 @@
 import React from 'react'
-import { useParams, Link, json } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
+import { DataContext } from './context/DataContext'
+import { useContext } from 'react'
+import api from './api/posts'
 
-const PostPage = ({ posts, handleDelete, setPage}) => {
+const PostPage = () => {
+  const { posts, setPosts, navigate} = useContext(DataContext)
   const { id } = useParams();
   const post = posts.find(post => (post.id).toString() === id)
-  // {page === 'view'?'sdf':'dfsd'}
-  // console.log(typeof page)
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`posts/${id}`)
+      const newListPost = posts.filter(post => (post.id).toString() !== id.toString());
+      setPosts(newListPost)
+      navigate('/')
+    } catch (error) {
+      console.log(`err:${error.message}`)
+    }
+
+  }
+
   return (
     <main className='Flex-1 postPage'>
       <div className='post_body_top'>
