@@ -3,7 +3,7 @@ import api from './api/posts'
 
 export default createStore({
     posts: [],
-    setPost: action((state, payload)=>{
+    setPosts: action((state, payload)=>{
         state.posts = payload
     }),
     postTitle: '',

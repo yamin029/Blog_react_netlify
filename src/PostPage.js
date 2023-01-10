@@ -2,22 +2,20 @@ import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { DataContext } from './context/DataContext'
 import { useContext } from 'react'
-import api from './api/posts'
+import { useStoreActions, useStoreState } from 'easy-peasy'
 
 const PostPage = () => {
-  const { posts, setPosts, navigate} = useContext(DataContext)
+  // console.log("post page called")
   const { id } = useParams();
-  const post = posts.find(post => (post.id).toString() === id)
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`posts/${id}`)
-      const newListPost = posts.filter(post => (post.id).toString() !== id.toString());
-      setPosts(newListPost)
-      navigate('/')
-    } catch (error) {
-      console.log(`err:${error.message}`)
-    }
+  const { navigate } = useContext(DataContext)
+  const deletePost = useStoreActions((actions) => actions.deletePost)
+  const getPostById = useStoreState((state) => state.getPostById)
+  const post = getPostById(id)
 
+  // const post = posts.find(post => (post.id).toString() === id)
+  const handleDelete = (id) => {
+    deletePost(id)
+    navigate('/')
   }
 
   return (
@@ -32,9 +30,9 @@ const PostPage = () => {
               Delete
             </button>
             <Link to={`/edit/${post.id}`}>
-            <button className="updateButton">
-              Update
-            </button>
+              <button className="updateButton">
+                Update
+              </button>
             </Link>
           </>
         }

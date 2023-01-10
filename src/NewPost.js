@@ -1,31 +1,30 @@
 import React from 'react'
-import { useState } from 'react'
 import { DataContext } from './context/DataContext'
 import { useContext } from 'react'
-import api from './api/posts'
 import { format } from 'date-fns'
+import { useStoreActions, useStoreState } from 'easy-peasy'
 
 
 const NewPost = () => {
-  const { posts, navigate, setPosts } = useContext(DataContext)
-  const [postTitle, setPostTitle] = useState('');
-  const [postBody, setPostBody] = useState('');
+  const { navigate } = useContext(DataContext)
+  // const navigate = useNavigate()
+  const posts = useStoreState((state)=> state.posts)
+  const postTitle = useStoreState((state)=> state.postTitle)
+  const postBody = useStoreState((state)=> state.postBody)
 
-  const handleSubmit = async (e) => {
+  const savePost = useStoreActions((actions)=> actions.savePost)
+  const setPostTitle = useStoreActions((actions)=> actions.setPostTitle)
+  const setPostBody = useStoreActions((actions)=> actions.setPostBody)
+  // const [postTitle, setPostTitle] = useState('');
+  // const [postBody, setPostBody] = useState('');
+
+  const handleSubmit = (e) => {
     e.preventDefault()
     const id = posts.length ? posts[posts.length - 1].id + 1 : 1;
     const datetime = format(new Date(), 'MMMM dd, yyyy pp');
     const newPost = { id, title: postTitle, datetime, body: postBody }
-    try {
-      const response = await api.post('/posts', newPost)
-      setPosts([...posts, response.data])
-      console.log(posts)
-      setPostTitle('')
-      setPostBody('')
-      navigate('/')
-    } catch (error) {
-      console.log(error.message)
-    }
+    savePost(newPost)
+    navigate('/')
   }
   return (
     <main className='Flex-1'>

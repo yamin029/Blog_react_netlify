@@ -1,10 +1,9 @@
 import React from 'react'
 import Feed from './Feed'
-import { DataContext } from './context/DataContext'
-import { useContext } from 'react'
+import { useStoreState } from 'easy-peasy'
 
-const Home = () => {
-  const {searchResult, fetchError, isLoading } = useContext(DataContext)
+const Home = ({isLoading, fetchError}) => {
+  const searchResult = useStoreState((state)=> state.searchResult)
   return (
     <main className='Flex-1 Home'>
       {isLoading && <p style={{ color: 'green' }}>Loading data ...</p>}
